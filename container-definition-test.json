@@ -1,0 +1,42 @@
+[
+    {
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+              "awslogs-group": "/ecs/scheduled_task/langtool_support_run",
+              "awslogs-region": "eu-central-1",
+              "awslogs-stream-prefix": "langtool"
+            }
+          },
+        "entryPoint": [
+            "sh",
+            "-c"
+        ],
+        "environment": [
+            {
+                "name": "CLOUDWATCH_METRICS",
+                "value": "True"
+            },
+            {
+                "name": "SA_TIMEOUT",
+                "value": "3600"
+            }
+        ],
+        "command": [
+          "yum update -y && yum install sudo -y && sudo yum install java -y && sudo yum install wget -y && wget https://languagetool.org/download/LanguageTool-stable.zip && sudo yum install unzip -y && unzip LanguageTool-stable.zip && cd /LanguageTool-5.* && nohup java -cp languagetool-server.jar org.languagetool.server.HTTPServer --port 8080 --allow-origin '*' --public"
+        ],
+        "portMappings": [
+            {
+                "containerPort": 8080,
+                "hostPort":8080,
+                "protocol": "tcp"
+            }
+        ],
+        "image": "amazoncorretto:latest",
+        "name": "langtool_container",
+        "networkMode": "awsvpc",
+        "requiresCompatibilities": [
+          "FARGATE"
+        ]
+    }
+]
